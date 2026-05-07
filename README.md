@@ -23,7 +23,8 @@ The system:
 3. Builds semantic embeddings using multilingual E5
 4. Performs semantic search over audio content using FAISS
 5. Detects predefined Arabic keywords inside transcripts
-6. Evaluates retrieval quality using Precision@K
+6. Evaluates retrieval quality using Precision@K, Speech Recognition using WER, and Summarization using ROUGE
+7. Provides an interactive web-based Demo Interface using Gradio
 
 ---
 
@@ -63,7 +64,12 @@ Arabic Audio Files (MASC Dataset)
                 ↓
 ┌──────────────────────────────────┐
 │ Stage 6 — Evaluation             │
-│ Precision@1 and Precision@3      │
+│ Precision@K, WER, and ROUGE      │
+└──────────────────────────────────┘
+                ↓
+┌──────────────────────────────────┐
+│ Stage 7 — Web Interface          │
+│ Gradio Demo (app.py)             │
 └──────────────────────────────────┘
 ```
 
@@ -250,9 +256,9 @@ The system scans all transcripts and returns:
 
 # 📊 Evaluation
 
-## Precision@K
+## Precision@K (Semantic Search)
 
-The notebook evaluates retrieval quality using:
+The pipeline evaluates retrieval quality using:
 
 * Precision@1
 * Precision@3
@@ -271,6 +277,29 @@ The system checks whether the correct audio file appears in:
 
 * Rank 1
 * Top 3 results
+
+## Word Error Rate (WER) & ROUGE Score
+
+The `evaluation.py` script also includes evaluation for the Generative models:
+* **WER**: Computes the Word Error Rate of the Whisper ASR transcriptions against the ground truth using `jiwer`.
+* **ROUGE**: Evaluates the mT5 abstractive summaries using `rouge_score`.
+
+---
+
+# 🌐 Web Demo Interface
+
+The system includes a fully interactive web demo built with **Gradio** (`app.py`).
+
+### Features:
+* Instant FAISS index loading for fast startup.
+* A user-friendly search box for semantic queries in Arabic.
+* Formatted data tables displaying the top matches, relevance scores, transcripts, and summaries.
+
+To run the demo:
+```bash
+python app.py
+```
+Then open your browser to the local URL (usually `http://127.0.0.1:7860`).
 
 ---
 
@@ -293,7 +322,7 @@ The system checks whether the correct audio file appears in:
 ```bash
 pip install transformers datasets torch torchaudio
 pip install sentence-transformers faiss-cpu
-pip install pandas numpy
+pip install pandas numpy gradio jiwer rouge-score
 ```
 
 ---
@@ -337,7 +366,6 @@ Potential future enhancements:
 * Arabic dialect classification
 * Speaker diarization
 * Hybrid keyword + semantic retrieval
-* Web interface deployment
 * GPU optimization
 * Audio chunking for long recordings
 * Fine-tuning Whisper on Arabic dialects
